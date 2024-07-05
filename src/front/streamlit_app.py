@@ -8,7 +8,7 @@ os.chdir(WORKDIR)
 sys.path.append(WORKDIR)
 
 from src.front.utils import format_message, provide_model
-from constants import AVAILABLE_MODELS, BASIC_PROMPT, CUSTOM_PROMPTS
+from constants import AVAILABLE_MODELS, CUSTOM_PROMPTS
 from langchain_core.messages import AIMessage, HumanMessage
 from src.model import Chatbot
 from langchain.memory import ConversationTokenBufferMemory
@@ -22,14 +22,16 @@ if os.getenv("LANGCHAIN_DEBUG_LOGGING") == 'True':
     set_debug(True)
 
 if __name__ == '__main__':
+    if "prompt" not in st.session_state:
+        st.session_state.prompt = ''
     if "llm_chat" not in st.session_state:
         st.session_state.model_name = 'OpenAI: gpt-3.5-turbo'
-        st.session_state.model.temperature = 0.5
+        st.session_state.temperature = 0.5
         st.session_state.model = provide_model(selected_model=st.session_state.model_name,
-                                               temperature=st.session_state.model.temperature)
+                                               temperature=st.session_state.temperature)
         st.session_state.llm_chat = Chatbot(
             model=st.session_state.model,
-            system_prompt=CUSTOM_PROMPTS['Python-Engineer']
+            system_prompt=st.session_state.prompt
         )
     if "memory" not in st.session_state:
         st.session_state.memory = ConversationTokenBufferMemory(
@@ -43,15 +45,18 @@ if __name__ == '__main__':
     if "user_query" not in st.session_state:
         st.session_state.user_query = ""
 
+    selected_prompt = st.selectbox("Choose system prompt", CUSTOM_PROMPTS, index=0)
     selected_model = st.selectbox("Choose model", AVAILABLE_MODELS, index=4)
     temperature = st.slider("Adjust Temperature", min_value=0.0, max_value=1.0, value=0.5, step=0.1)
-    if (selected_model != st.session_state.model_name)|(st.session_state.model.temperature != temperature):
+
+    if (selected_model != st.session_state.model_name)|(st.session_state.temperature != temperature)|(st.session_state.prompt != selected_prompt):
         st.session_state.model_name = selected_model
-        st.session_state.model.temperature = temperature
+        st.session_state.temperature = temperature
+        st.session_state.prompt = selected_prompt
         st.session_state.model = provide_model(selected_model=st.session_state.model_name,
-                                               temperature=st.session_state.model.temperature)
+                                               temperature=st.session_state.temperature)
         st.session_state.llm_chat = Chatbot(model=st.session_state.model,
-                                            system_prompt=CUSTOM_PROMPTS)
+                                            system_prompt=st.session_state.prompt)
 
 
     st.title("🦜🔗 Chat with me!")
