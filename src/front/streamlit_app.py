@@ -26,7 +26,8 @@ if os.getenv("LANGCHAIN_DEBUG_LOGGING") == 'True':
 
 if __name__ == '__main__':
     if "llm_chat" not in st.session_state:
-        st.session_state.model = ChatOpenAI(model = 'gpt-3.5-turbo', temperature = 0)
+        #st.session_state.model = ChatOpenAI(model = 'gpt-3.5-turbo', temperature = 0)
+        st.session_state.model = ChatGoogleGenerativeAI(model = 'gemini-1.5-pro', temperature = 0)
         st.session_state.llm_chat = Chatbot(
             model = st.session_state.model,
             system_prompt = BASIC_PROMPT #CUSTOM_PROMPTS['Python-Engineer']
