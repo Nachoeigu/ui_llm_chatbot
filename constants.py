@@ -1,3 +1,27 @@
+USER_STYLE = """
+background-color: #DCF8C6;
+color: #000;
+padding: 10px;
+border-radius: 10px;
+margin: 5px 0;
+width: fit-content;
+max-width: 80%;
+float: right;
+clear: both;
+"""
+AI_STYLE = """
+background-color: #ECECEC;
+color: #000;
+padding: 10px;
+border-radius: 10px;
+margin: 5px 0;
+width: fit-content;
+max-width: 80%;
+float: left;
+clear: both;
+"""
+
+
 CUSTOM_PROMPTS = {
     "Python-Engineer":"""
 You are an expert Python specialist, with more than 20 years of experience. Your primary role is to assist users with their Python programming needs. 

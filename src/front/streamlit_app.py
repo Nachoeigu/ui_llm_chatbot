@@ -7,12 +7,15 @@ WORKDIR=os.getenv("WORKDIR")
 os.chdir(WORKDIR)
 sys.path.append(WORKDIR)
 
+from src.front.utils import format_message
 from constants import *
+from langchain_core.messages import AIMessage, HumanMessage
 from src.model import Chatbot
 from langchain.memory import ConversationTokenBufferMemory
 from langchain.globals import set_debug
 from langchain_openai.chat_models import ChatOpenAI
 from langchain_google_vertexai import ChatVertexAI
+from langchain_google_genai.chat_models import ChatGoogleGenerativeAI
 import logging
 import src.logging_config
 import streamlit as st
@@ -23,13 +26,10 @@ if os.getenv("LANGCHAIN_DEBUG_LOGGING") == 'True':
 
 if __name__ == '__main__':
     if "llm_chat" not in st.session_state:
-        #st.session_state.model = ChatVertexAI(model="gemini-pro", temperature=0)
-        #st.session_state.model = ChatGoogleGenerativeAI(model = 'gemini-1.5-pro', temperature = 0)
-        st.session_state.model = ChatOpenAI(model = 'gpt-4o', temperature = 0)
-        #st.session_state.model = ChatOpenAI(model = 'gpt-3.5-turbo', temperature = 0)
+        st.session_state.model = ChatOpenAI(model = 'gpt-3.5-turbo', temperature = 0)
         st.session_state.llm_chat = Chatbot(
             model = st.session_state.model,
-            system_prompt = CUSTOM_PROMPTS['Python-Engineer']
+            system_prompt = BASIC_PROMPT #CUSTOM_PROMPTS['Python-Engineer']
         )
     if "memory" not in st.session_state:
         st.session_state.memory = ConversationTokenBufferMemory(
@@ -42,8 +42,16 @@ if __name__ == '__main__':
 
     st.title("🦜🔗 Chat with me!")
 
+    st.header("Chat history: Memory of the LLM")
+    for message in st.session_state.memory.chat_memory.messages:
+        if isinstance(message, HumanMessage):
+            st.markdown(format_message(message.content, True), unsafe_allow_html=True)
+        if isinstance(message, AIMessage):
+            st.markdown(format_message(message.content, False), unsafe_allow_html=True)
+
+    st.markdown(f"**Total Tokens Used:** {st.session_state.token_usage}")
+    logger.info(st.session_state.memory.chat_memory.messages.count)
     with st.form("my_form"):
-        logger.info(st.session_state.memory.chat_memory.messages)
         user_query = st.text_area("Enter your question:", "I would like to know more about...")
         submitted = st.form_submit_button("Submit")
         if submitted:
@@ -52,9 +60,11 @@ if __name__ == '__main__':
                 memory=st.session_state.memory
             )
             st.session_state.memory.save_context(
-                {'Past User Message': user_query},
-                {'Past AI Message': output['content']}
+                {'input': user_query},
+                {'output': output['content']}
             )
+            logger.info(f"Consumption of tokens in this message:\n{output['total_tokens']}")
             st.session_state.token_usage += output['total_tokens']
-
-            st.info(output)
+            logger.info(f"Consumption of tokens in total conversation:\n{st.session_state.token_usage}")
+            st.info(output['content'])
+            st.rerun()
