@@ -6,4 +6,4 @@ langchain_google_vertexai
 langchain
 streamlit
 langchain-google-genai
-
+langchain-anthropic

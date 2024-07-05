@@ -3,19 +3,16 @@ from dotenv import load_dotenv
 import sys
 
 load_dotenv()
-WORKDIR=os.getenv("WORKDIR")
+WORKDIR = os.getenv("WORKDIR")
 os.chdir(WORKDIR)
 sys.path.append(WORKDIR)
 
-from src.front.utils import format_message
-from constants import *
+from src.front.utils import format_message, provide_model
+from constants import AVAILABLE_MODELS, BASIC_PROMPT, CUSTOM_PROMPTS
 from langchain_core.messages import AIMessage, HumanMessage
 from src.model import Chatbot
 from langchain.memory import ConversationTokenBufferMemory
 from langchain.globals import set_debug
-from langchain_openai.chat_models import ChatOpenAI
-from langchain_google_vertexai import ChatVertexAI
-from langchain_google_genai.chat_models import ChatGoogleGenerativeAI
 import logging
 import src.logging_config
 import streamlit as st
@@ -26,15 +23,17 @@ if os.getenv("LANGCHAIN_DEBUG_LOGGING") == 'True':
 
 if __name__ == '__main__':
     if "llm_chat" not in st.session_state:
-        #st.session_state.model = ChatOpenAI(model = 'gpt-3.5-turbo', temperature = 0)
-        st.session_state.model = ChatGoogleGenerativeAI(model = 'gemini-1.5-pro', temperature = 0)
+        st.session_state.model_name = 'OpenAI: gpt-3.5-turbo'
+        st.session_state.model.temperature = 0.5
+        st.session_state.model = provide_model(selected_model=st.session_state.model_name,
+                                               temperature=st.session_state.model.temperature)
         st.session_state.llm_chat = Chatbot(
-            model = st.session_state.model,
-            system_prompt = BASIC_PROMPT #CUSTOM_PROMPTS['Python-Engineer']
+            model=st.session_state.model,
+            system_prompt=CUSTOM_PROMPTS['Python-Engineer']
         )
     if "memory" not in st.session_state:
         st.session_state.memory = ConversationTokenBufferMemory(
-            llm=st.session_state.model, 
+            llm=st.session_state.model,
             max_token_limit=64000
         )
 
@@ -44,16 +43,25 @@ if __name__ == '__main__':
     if "user_query" not in st.session_state:
         st.session_state.user_query = ""
 
+    selected_model = st.selectbox("Choose model", AVAILABLE_MODELS, index=4)
+    temperature = st.slider("Adjust Temperature", min_value=0.0, max_value=1.0, value=0.5, step=0.1)
+    if (selected_model != st.session_state.model_name)|(st.session_state.model.temperature != temperature):
+        st.session_state.model_name = selected_model
+        st.session_state.model.temperature = temperature
+        st.session_state.model = provide_model(selected_model=st.session_state.model_name,
+                                               temperature=st.session_state.model.temperature)
+        st.session_state.llm_chat = Chatbot(model=st.session_state.model,
+                                            system_prompt=CUSTOM_PROMPTS)
+
+
     st.title("🦜🔗 Chat with me!")
 
-    st.header("Chat history: Memory of the LLM")
     for message in st.session_state.memory.chat_memory.messages:
         if isinstance(message, HumanMessage):
             st.markdown(format_message(message.content, True), unsafe_allow_html=True)
         if isinstance(message, AIMessage):
             st.markdown(format_message(message.content, False), unsafe_allow_html=True)
 
-    st.markdown(f"**Total Consumed Tokens:** {st.session_state.token_usage}")
     with st.form(key='submission'):
         user_query = st.text_area("Put your question:", st.session_state.user_query)
         submitted = st.form_submit_button("Submit")
@@ -71,5 +79,6 @@ if __name__ == '__main__':
             logger.info(f"Consumption of tokens in total conversation:\n{st.session_state.token_usage}")
             st.session_state.user_query = ""
             st.info(output['content'])
-            logger.info(st.session_state.memory.chat_memory.messages)
             st.rerun()
+
+    st.markdown(f"**Total Consumed Tokens:** {st.session_state.token_usage}")
