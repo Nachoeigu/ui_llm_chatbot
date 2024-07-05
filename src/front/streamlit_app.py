@@ -40,6 +40,9 @@ if __name__ == '__main__':
     if "token_usage" not in st.session_state:
         st.session_state.token_usage = 0
 
+    if "user_query" not in st.session_state:
+        st.session_state.user_query = ""
+
     st.title("🦜🔗 Chat with me!")
 
     st.header("Chat history: Memory of the LLM")
@@ -49,10 +52,9 @@ if __name__ == '__main__':
         if isinstance(message, AIMessage):
             st.markdown(format_message(message.content, False), unsafe_allow_html=True)
 
-    st.markdown(f"**Total Tokens Used:** {st.session_state.token_usage}")
-    logger.info(st.session_state.memory.chat_memory.messages.count)
-    with st.form("my_form"):
-        user_query = st.text_area("Enter your question:", "I would like to know more about...")
+    st.markdown(f"**Total Consumed Tokens:** {st.session_state.token_usage}")
+    with st.form(key='submission'):
+        user_query = st.text_area("Put your question:", st.session_state.user_query)
         submitted = st.form_submit_button("Submit")
         if submitted:
             output = st.session_state.llm_chat(
@@ -66,5 +68,7 @@ if __name__ == '__main__':
             logger.info(f"Consumption of tokens in this message:\n{output['total_tokens']}")
             st.session_state.token_usage += output['total_tokens']
             logger.info(f"Consumption of tokens in total conversation:\n{st.session_state.token_usage}")
+            st.session_state.user_query = ""
             st.info(output['content'])
+            logger.info(st.session_state.memory.chat_memory.messages)
             st.rerun()
