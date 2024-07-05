@@ -25,31 +25,36 @@ if __name__ == '__main__':
     if "llm_chat" not in st.session_state:
         #st.session_state.model = ChatVertexAI(model="gemini-pro", temperature=0)
         #st.session_state.model = ChatGoogleGenerativeAI(model = 'gemini-1.5-pro', temperature = 0)
-        #st.session_state.model = ChatOpenAI(model = 'gpt-4o', temperature = 0)
-        st.session_sate.model = ChatOpenAI(model = 'gpt-3.5-turbo', temperature = 0)
-        st.session_sate.llm_chat = Chatbot(
-            model = st.session_sate.model,
-            system_prompt = BASIC_PROMPT #CUSTOM_PROMPTS['Python-Engineer']
+        st.session_state.model = ChatOpenAI(model = 'gpt-4o', temperature = 0)
+        #st.session_state.model = ChatOpenAI(model = 'gpt-3.5-turbo', temperature = 0)
+        st.session_state.llm_chat = Chatbot(
+            model = st.session_state.model,
+            system_prompt = CUSTOM_PROMPTS['Python-Engineer']
         )
     if "memory" not in st.session_state:
-        st.session_sate.memory = ConversationTokenBufferMemory(
-            llm=st.session_sate.model, 
+        st.session_state.memory = ConversationTokenBufferMemory(
+            llm=st.session_state.model, 
             max_token_limit=64000
         )
+
+    if "token_usage" not in st.session_state:
+        st.session_state.token_usage = 0
 
     st.title("🦜🔗 Chat with me!")
 
     with st.form("my_form"):
-        logger.info(st.session_sate.memory.chat_memory.messages)
+        logger.info(st.session_state.memory.chat_memory.messages)
         user_query = st.text_area("Enter your question:", "I would like to know more about...")
         submitted = st.form_submit_button("Submit")
         if submitted:
-            output = st.session_sate.llm_chat(
+            output = st.session_state.llm_chat(
                 user_query=user_query,
-                memory=st.session_sate.memory
+                memory=st.session_state.memory
             )
-            st.session_sate.memory.save_context(
+            st.session_state.memory.save_context(
                 {'Past User Message': user_query},
-                {'Past AI Message': output}
+                {'Past AI Message': output['content']}
             )
+            st.session_state.token_usage += output['total_tokens']
+
             st.info(output)

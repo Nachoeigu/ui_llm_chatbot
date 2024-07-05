@@ -39,8 +39,9 @@ if __name__ == '__main__':
     while True:
         user_query = input("Put your question:\n")
         output = llm_chat(user_query,memory)
+        print(f"Usage tokens: {output['total_tokens']}")
         memory.save_context(
             {'Past User Message': user_query},
-            {'Past AI Message': output}
+            {'Past AI Message': output['content']}
         )
         logger.info(memory.load_memory_variables({}))
