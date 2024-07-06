@@ -7,10 +7,10 @@ WORKDIR = os.getenv("WORKDIR")
 os.chdir(WORKDIR)
 sys.path.append(WORKDIR)
 
-from src.front.utils import format_message, provide_model
+from src.front.utils import format_message, model_selection
 from constants import AVAILABLE_MODELS, CUSTOM_PROMPTS
 from langchain_core.messages import AIMessage, HumanMessage
-from src.front.utils import *
+from src.model import Chatbot
 from langchain.memory import ConversationTokenBufferMemory
 from langchain.globals import set_debug
 import logging
@@ -51,7 +51,7 @@ if __name__ == '__main__':
         st.session_state = model_selection(st.session_state, selected_model, temperature, selected_prompt)
 
     st.title("🦜🔗 Chat with me!")
-    logger.info(f"Model settings:\nToken memory:{st.session_state.n_token_memory}\nPrompt:{st.session_state.llm_chat.system_prompt}\nModel name:{st.session_state.llm_chat.model.model_name}\nToken usage:{st.session_state.token_usage}\nUser query:{st.session_state.user_query}\nTemperature:{st.session_state.temperature}")
+    logger.info(f"Model settings:\nToken memory:{st.session_state.n_token_memory}\nPrompt:{st.session_state.llm_chat.system_prompt}\nModel name:{st.session_state.llm_chat.model}\nToken usage:{st.session_state.token_usage}\nUser query:{st.session_state.user_query}\nTemperature:{st.session_state.temperature}")
     for message in st.session_state.memory.chat_memory.messages:
         if isinstance(message, HumanMessage):
             st.markdown(format_message(message.content, True), unsafe_allow_html=True)

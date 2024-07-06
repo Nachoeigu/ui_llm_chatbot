@@ -34,7 +34,7 @@ def provide_model(selected_model:str, temperature:float=0) -> tuple:
     elif company == 'Anthropic':
         return ChatAnthropic(model = model_name, temperature = temperature)
     
-def model_selection(session_state, selected_model, temperature, selected_prompt):
+def model_selection(session_state, selected_model:str, temperature:float, selected_prompt:str):
     session_state.model_name = selected_model
     session_state.temperature = temperature
     session_state.prompt = selected_prompt
