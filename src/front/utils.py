@@ -9,6 +9,7 @@ sys.path.append(WORKDIR)
 
 from constants import USER_STYLE, AI_STYLE
 import logging
+from src.model import Chatbot
 import src.logging_config
 import streamlit as st
 from langchain_openai.chat_models import ChatOpenAI
@@ -32,3 +33,14 @@ def provide_model(selected_model:str, temperature:float=0) -> tuple:
         return ChatGoogleGenerativeAI(model = model_name, temperature = temperature)
     elif company == 'Anthropic':
         return ChatAnthropic(model = model_name, temperature = temperature)
+    
+def model_selection(session_state, selected_model, temperature, selected_prompt):
+    session_state.model_name = selected_model
+    session_state.temperature = temperature
+    session_state.prompt = selected_prompt
+    session_state.model = provide_model(selected_model=session_state.model_name,
+                                            temperature=session_state.temperature)
+    session_state.llm_chat = Chatbot(model=st.session_state.model,
+                                        system_prompt=session_state.prompt)
+
+    return session_state

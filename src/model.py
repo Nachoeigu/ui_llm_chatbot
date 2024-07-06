@@ -58,5 +58,5 @@ if __name__ == '__main__':
     from langchain_google_vertexai import ChatVertexAI
     #model = ChatOpenAI(model = 'gpt-4o', temperature = 0)
     model = ChatGoogleGenerativeAI(model = 'gemini-1.5-pro', temperature = 0)
-    output = Chatbot(model = model, system_prompt=BASIC_PROMPT)('hi', memory = ConversationTokenBufferMemory(llm = model, max_token_limit=10000))
+    output = Chatbot(model = model, system_prompt=CUSTOM_PROMPTS['Default-LLM'])('hi', memory = ConversationTokenBufferMemory(llm = model, max_token_limit=10000))
 
