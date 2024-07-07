@@ -51,7 +51,7 @@ if __name__ == '__main__':
         st.session_state = model_selection(st.session_state, selected_model, temperature, selected_prompt)
 
     st.title("🦜🔗 Chat with me!")
-    logger.info(f"Model settings:\nToken memory:{st.session_state.n_token_memory}\nPrompt:{st.session_state.llm_chat.system_prompt}\nModel name:{st.session_state.llm_chat.model}\nToken usage:{st.session_state.token_usage}\nUser query:{st.session_state.user_query}\nTemperature:{st.session_state.temperature}")
+    logger.info(f"Model settings:\n- Token memory:{st.session_state.n_token_memory}\n- Prompt:{st.session_state.llm_chat.system_prompt}\n- Model name:{st.session_state.llm_chat.model}\n- Token usage:{st.session_state.token_usage}\n- Temperature:{st.session_state.temperature}")
     for message in st.session_state.memory.chat_memory.messages:
         if isinstance(message, HumanMessage):
             st.markdown(format_message(message.content, True), unsafe_allow_html=True)
