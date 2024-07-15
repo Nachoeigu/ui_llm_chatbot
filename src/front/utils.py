@@ -1,6 +1,8 @@
 import os
 from dotenv import load_dotenv
 import sys
+from datetime import datetime
+import json
 
 load_dotenv()
 WORKDIR=os.getenv("WORKDIR")
@@ -8,6 +10,7 @@ os.chdir(WORKDIR)
 sys.path.append(WORKDIR)
 
 from constants import USER_STYLE, AI_STYLE
+from langchain_core.messages import AIMessage, HumanMessage
 import logging
 from src.model import Chatbot
 import src.logging_config
@@ -44,3 +47,17 @@ def model_selection(session_state, selected_model:str, temperature:float, select
                                         system_prompt=session_state.prompt)
 
     return session_state
+
+def message_to_dict(message):
+    if isinstance(message, HumanMessage):
+        return {'role': 'human', 'content': message.content}
+    elif isinstance(message, AIMessage):
+        return {'role': 'AI', 'content': message.content}
+    else:
+        raise TypeError(f"Object of type {type(message)} is not JSON serializable")
+
+def saving_memory_in_file(memory):
+    history = [message_to_dict(msg) for msg in memory]
+    filename = f"chat_history/{datetime.now().strftime('%Y%m%d')}.json"
+    with open(filename, 'w') as f:
+        json.dump(history, f, indent=4)

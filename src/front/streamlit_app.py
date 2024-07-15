@@ -7,7 +7,7 @@ WORKDIR = os.getenv("WORKDIR")
 os.chdir(WORKDIR)
 sys.path.append(WORKDIR)
 
-from src.front.utils import format_message, model_selection
+from src.front.utils import format_message, model_selection, saving_memory_in_file
 from constants import AVAILABLE_MODELS, CUSTOM_PROMPTS
 from langchain_core.messages import AIMessage, HumanMessage
 from src.model import Chatbot
@@ -51,6 +51,7 @@ if __name__ == '__main__':
         st.session_state = model_selection(st.session_state, selected_model, temperature, selected_prompt)
 
     st.title("🦜🔗 Chat with me!")
+    saving_memory_in_file(st.session_state.memory.chat_memory.messages)
     logger.info(f"Model settings:\n- Token memory:{st.session_state.n_token_memory}\n- Prompt:{st.session_state.llm_chat.system_prompt}\n- Model name:{st.session_state.llm_chat.model}\n- Token usage:{st.session_state.token_usage}\n- Temperature:{st.session_state.temperature}")
     for message in st.session_state.memory.chat_memory.messages:
         if isinstance(message, HumanMessage):
