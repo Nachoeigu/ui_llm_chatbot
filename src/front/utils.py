@@ -30,6 +30,7 @@ def format_message(message, is_user=True):
 
 def provide_model(selected_model:str, temperature:float=0) -> tuple:
     company, model_name = selected_model.split(':')[0].strip(), selected_model.split(':')[-1].strip()
+
     if company == 'OpenAI':
         return ChatOpenAI(model = model_name, temperature = temperature)
     elif company == 'Google':

@@ -26,7 +26,7 @@ if __name__ == '__main__':
     if "prompt" not in st.session_state:
         st.session_state.prompt = ''
     if "llm_chat" not in st.session_state:
-        st.session_state = model_selection(st.session_state, 'OpenAI: gpt-3.5-turbo', 0.5, st.session_state.prompt)
+        st.session_state = model_selection(st.session_state, 'OpenAI: gpt-4o-mini', 0.5, st.session_state.prompt)
     if "memory" not in st.session_state:
         if "n_token_memory" not in st.session_state:
             st.session_state.n_token_memory = n_token_memory

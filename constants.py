@@ -26,10 +26,11 @@ AVAILABLE_MODELS = [
     "Anthropic: claude-3-haiku",
     "Anthropic: claude-3-sonnet",
     "Anthropic: claude-3-opus",
+    "OpenAI: gpt-4o-mini",
     "OpenAI: gpt-4o",
     "OpenAI: gpt-3.5-turbo",
     "Google: gemini-1.5-pro", 
-    "Google: gemini-pro"
+    "Google: gemini-pro"   
 ]
 
 CUSTOM_PROMPTS = {
