@@ -9,13 +9,14 @@ WORKDIR=os.getenv("WORKDIR")
 os.chdir(WORKDIR)
 sys.path.append(WORKDIR)
 
-from constants import USER_STYLE, AI_STYLE
+from constants import USER_STYLE, AI_STYLE, CUSTOM_PROMPTS
 from langchain_core.messages import AIMessage, HumanMessage
 import logging
 from src.model import Chatbot
 import src.logging_config
 import streamlit as st
 from langchain_openai.chat_models import ChatOpenAI
+from langchain_groq import ChatGroq
 from langchain_google_genai.chat_models import ChatGoogleGenerativeAI
 from langchain_anthropic import ChatAnthropic
 
@@ -37,6 +38,8 @@ def provide_model(selected_model:str, temperature:float=0) -> tuple:
         return ChatGoogleGenerativeAI(model = model_name, temperature = temperature)
     elif company == 'Anthropic':
         return ChatAnthropic(model = model_name, temperature = temperature)
+    elif company == 'Groq':
+        return ChatGroq(model = model_name, temperature = temperature)
     
 def model_selection(session_state, selected_model:str, temperature:float, selected_prompt:str):
     session_state.model_name = selected_model
@@ -45,7 +48,7 @@ def model_selection(session_state, selected_model:str, temperature:float, select
     session_state.model = provide_model(selected_model=session_state.model_name,
                                             temperature=session_state.temperature)
     session_state.llm_chat = Chatbot(model=st.session_state.model,
-                                        system_prompt=session_state.prompt)
+                                        system_prompt=CUSTOM_PROMPTS[session_state.prompt])
 
     return session_state
 

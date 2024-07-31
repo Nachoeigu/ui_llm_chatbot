@@ -24,7 +24,7 @@ if os.getenv("LANGCHAIN_DEBUG_LOGGING") == 'True':
 if __name__ == '__main__':
     n_token_memory = st.number_input("Define the context window:",min_value = 0, value = 64000)
     if "prompt" not in st.session_state:
-        st.session_state.prompt = ''
+        st.session_state.prompt = 'Default-LLM'
     if "llm_chat" not in st.session_state:
         st.session_state = model_selection(st.session_state, 'OpenAI: gpt-4o-mini', 0.5, st.session_state.prompt)
     if "memory" not in st.session_state:

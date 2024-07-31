@@ -50,7 +50,7 @@ class Chatbot:
 
     def __call__(self, user_query:str, memory:ConversationTokenBufferMemory):
         return self.chain.invoke({'user_query':user_query,
-                           'memory':'' if not memory.chat_memory.messages else 'I will provide to you our chronological conversation history, use only if needed:'+str(memory.chat_memory.messages)})
+                           'memory':'' if not memory.chat_memory.messages else 'Chronological chat history (use only if needed): '+str(memory.chat_memory.messages)})
 
 
 if __name__ == '__main__':
