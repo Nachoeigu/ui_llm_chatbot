@@ -3,3 +3,4 @@ app.log
 __pycache__/
 venv/
 chat_history/*.json
+testing.py
