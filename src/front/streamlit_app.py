@@ -10,7 +10,6 @@ sys.path.append(WORKDIR)
 from src.front.utils import format_message, model_selection, saving_memory_in_file
 from constants import AVAILABLE_MODELS, CUSTOM_PROMPTS
 from langchain_core.messages import AIMessage, HumanMessage
-from src.model import Chatbot
 from langchain.memory import ConversationTokenBufferMemory
 from langchain.globals import set_debug
 import logging
@@ -41,6 +40,8 @@ if __name__ == '__main__':
     selected_prompt = st.selectbox("Choose system prompt", CUSTOM_PROMPTS, index=0)
     selected_model = st.selectbox("Choose model", AVAILABLE_MODELS, index=4)
     temperature = st.slider("Adjust Temperature", min_value=0.0, max_value=1.0, value=0.5, step=0.1)
+    if st.button("Clean Memory", type = 'primary'):
+        st.session_state.memory = ConversationTokenBufferMemory(llm=st.session_state.model, max_token_limit=st.session_state.n_token_memory)
 
     if n_token_memory != st.session_state.n_token_memory:
         st.session_state.n_token_memory = n_token_memory
@@ -58,19 +59,24 @@ if __name__ == '__main__':
             st.markdown(format_message(message.content, True), unsafe_allow_html=True)
         if isinstance(message, AIMessage):
             st.markdown(format_message(message.content, False), unsafe_allow_html=True)
-
+    
+    typing_placeholder = st.empty()
     with st.form(key='submission'):
         user_query = st.text_area("Put your question:", st.session_state.user_query)
         submitted = st.form_submit_button("Submit")
         if submitted:
+            typing_placeholder.markdown(f"**Generating response...**")
+        
             output = st.session_state.llm_chat(
                 user_query=user_query,
                 memory=st.session_state.memory
             )
+            typing_placeholder.empty()
             st.session_state.memory.save_context(
                 {'input': user_query},
                 {'output': output['content']}
             )
+            logger.info('' if not st.session_state.memory.chat_memory.messages else '\nBELOW OUR CHRONOLOGICAL CHAT HISTORY (use only if needed):\n ```'+ '\n'.join([f"User: {msg.content}" if isinstance(msg, HumanMessage) else f"AI: {msg.content}" for msg in st.session_state.memory.chat_memory.messages]) + '´´´')
             logger.info(f"Consumption of tokens in this message:\n{output['total_tokens']}")
             st.session_state.token_usage += output['total_tokens']
             logger.info(f"Consumption of tokens in total conversation:\n{st.session_state.token_usage}")

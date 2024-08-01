@@ -25,7 +25,7 @@ if __name__ == '__main__':
     #model = ChatVertexAI(model="gemini-pro", temperature=0)
     #model = ChatGoogleGenerativeAI(model = 'gemini-1.5-pro', temperature = 0)
     #model = ChatOpenAI(model = 'gpt-4o', temperature = 0)
-    model = ChatOpenAI(model = 'gpt-3.5-turbo', temperature = 0)
+    model = ChatOpenAI(model = 'gpt-4o-mini', temperature = 0)
     memory = ConversationTokenBufferMemory(
         llm=model, 
         max_token_limit=64000

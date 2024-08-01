@@ -18,6 +18,7 @@ from langchain_google_genai.chat_models import ChatGoogleGenerativeAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnableLambda
 from langchain.output_parsers import PydanticOutputParser
+from langchain_core.messages import AIMessage, HumanMessage
 
 import logging
 import src.logging_config
@@ -41,7 +42,7 @@ class Chatbot:
 
     def __developing_prompt(self):
         return PromptTemplate(
-            template="{system_prompt}\n Answer this: '{user_query}'\n{memory}",
+            template="{system_prompt}\n Answer this: '{user_query}'{memory}",
             input_variables=["user_query","memory"],
             partial_variables={
                 'system_prompt': self.system_prompt
@@ -50,7 +51,7 @@ class Chatbot:
 
     def __call__(self, user_query:str, memory:ConversationTokenBufferMemory):
         return self.chain.invoke({'user_query':user_query,
-                           'memory':'' if not memory.chat_memory.messages else 'Chronological chat history (use only if needed): '+str(memory.chat_memory.messages)})
+                           'memory':'' if not memory.chat_memory.messages else '\nBELOW OUR CHRONOLOGICAL CHAT HISTORY (use only if needed):\n ```\n'+ '\n'.join([f"USER: {msg.content}" if isinstance(msg, HumanMessage) else f"AI: {msg.content}" for msg in memory.chat_memory.messages]) + '\n´´´'})
 
 
 if __name__ == '__main__':

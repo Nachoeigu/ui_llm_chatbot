@@ -20,7 +20,6 @@ from langchain_groq import ChatGroq
 from langchain_google_genai.chat_models import ChatGoogleGenerativeAI
 from langchain_anthropic import ChatAnthropic
 
-
 logger = logging.getLogger(__name__)
 
 def format_message(message, is_user=True):
@@ -41,6 +40,8 @@ def provide_model(selected_model:str, temperature:float=0) -> tuple:
     elif company == 'Groq':
         return ChatGroq(model = model_name, temperature = temperature)
     
+
+
 def model_selection(session_state, selected_model:str, temperature:float, selected_prompt:str):
     session_state.model_name = selected_model
     session_state.temperature = temperature
