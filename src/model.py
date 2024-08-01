@@ -12,7 +12,6 @@ from langchain_core.chat_history import InMemoryChatMessageHistory
 
 from langchain.memory import ConversationTokenBufferMemory
 from langchain_core.output_parsers.string import StrOutputParser
-from langchain_core.prompts import PromptTemplate
 from langchain.globals import set_debug
 from langchain_openai.chat_models import ChatOpenAI
 from langchain_google_vertexai import ChatVertexAI
@@ -63,3 +62,10 @@ class Chatbot:
     def __call__(self, user_query:str, memory:ConversationTokenBufferMemory):
         self.history = InMemoryChatMessageHistory(messages = memory.buffer_as_messages)
         return self.chain_with_memory.invoke({'input':user_query}, config = {'configurable': {'session_id': 'localhost'}})
+
+
+if __name__ == '__main__':
+    model = ChatGoogleGenerativeAI(model = 'gemini-1.5-pro')
+    bot = Chatbot(model = model)
+    memory = ConversationTokenBufferMemory(llm=model)
+    output = bot(user_query = "Hi", memory = memory)
