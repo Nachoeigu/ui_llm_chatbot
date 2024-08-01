@@ -21,18 +21,12 @@ if os.getenv("LANGCHAIN_DEBUG_LOGGING") == 'True':
     set_debug(True)
 
 if __name__ == '__main__':
-    n_token_memory = st.number_input("Define the context window:",min_value = 0, value = 64000)
     if "prompt" not in st.session_state:
         st.session_state.prompt = 'Default-LLM'
     if "llm_chat" not in st.session_state:
         st.session_state = model_selection(st.session_state, 'OpenAI: gpt-4o-mini', 0.5, st.session_state.prompt)
     if "memory" not in st.session_state:
-        if "n_token_memory" not in st.session_state:
-            st.session_state.n_token_memory = n_token_memory
-        st.session_state.memory = ConversationTokenBufferMemory(llm=st.session_state.model, max_token_limit=st.session_state.n_token_memory)
-
-    if "token_usage" not in st.session_state:
-        st.session_state.token_usage = 0
+        st.session_state.memory = ConversationTokenBufferMemory(llm=st.session_state.model)
 
     if "user_query" not in st.session_state:
         st.session_state.user_query = ""
@@ -41,11 +35,7 @@ if __name__ == '__main__':
     selected_model = st.selectbox("Choose model", AVAILABLE_MODELS, index=4)
     temperature = st.slider("Adjust Temperature", min_value=0.0, max_value=1.0, value=0.5, step=0.1)
     if st.button("Clean Memory", type = 'primary'):
-        st.session_state.memory = ConversationTokenBufferMemory(llm=st.session_state.model, max_token_limit=st.session_state.n_token_memory)
-
-    if n_token_memory != st.session_state.n_token_memory:
-        st.session_state.n_token_memory = n_token_memory
-        st.session_state.memory = ConversationTokenBufferMemory(llm=st.session_state.model, max_token_limit=st.session_state.n_token_memory)         
+        st.session_state.memory = ConversationTokenBufferMemory(llm=st.session_state.model)
 
 
     if (selected_model != st.session_state.model_name)|(st.session_state.temperature != temperature)|(st.session_state.prompt != selected_prompt):
@@ -53,7 +43,7 @@ if __name__ == '__main__':
 
     st.title("🦜🔗 Chat with me!")
     saving_memory_in_file(st.session_state.memory.chat_memory.messages)
-    logger.info(f"Model settings:\n- Token memory:{st.session_state.n_token_memory}\n- Prompt:{st.session_state.llm_chat.system_prompt}\n- Model name:{st.session_state.llm_chat.model}\n- Token usage:{st.session_state.token_usage}\n- Temperature:{st.session_state.temperature}")
+    logger.info(f"Model settings:\n- Prompt:{st.session_state.llm_chat.system_prompt}\n- Model name:{st.session_state.llm_chat.model}\n- Temperature:{st.session_state.temperature}")
     for message in st.session_state.memory.chat_memory.messages:
         if isinstance(message, HumanMessage):
             st.markdown(format_message(message.content, True), unsafe_allow_html=True)
@@ -74,14 +64,9 @@ if __name__ == '__main__':
             typing_placeholder.empty()
             st.session_state.memory.save_context(
                 {'input': user_query},
-                {'output': output['content']}
+                {'output': output}
             )
-            logger.info('' if not st.session_state.memory.chat_memory.messages else '\nBELOW OUR CHRONOLOGICAL CHAT HISTORY (use only if needed):\n ```'+ '\n'.join([f"User: {msg.content}" if isinstance(msg, HumanMessage) else f"AI: {msg.content}" for msg in st.session_state.memory.chat_memory.messages]) + '´´´')
-            logger.info(f"Consumption of tokens in this message:\n{output['total_tokens']}")
-            st.session_state.token_usage += output['total_tokens']
-            logger.info(f"Consumption of tokens in total conversation:\n{st.session_state.token_usage}")
             st.session_state.user_query = " "
-            st.info(output['content'])
+            st.info(output)
             st.rerun()
-
-    st.markdown(f"**Total Consumed Tokens:** {st.session_state.token_usage}")
+        
