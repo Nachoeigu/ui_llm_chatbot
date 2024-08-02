@@ -29,6 +29,7 @@ AVAILABLE_MODELS = [
     "OpenAI: gpt-4o-mini",
     "OpenAI: gpt-4o",
     "OpenAI: gpt-3.5-turbo",
+    "Google: gemini-1.5-pro-exp-0801",
     "Google: gemini-1.5-pro", 
     "Google: gemini-pro",
     "Groq: llama-3.1-405b-reasoning",

@@ -65,7 +65,8 @@ class Chatbot:
 
 
 if __name__ == '__main__':
-    model = ChatGoogleGenerativeAI(model = 'gemini-1.5-pro')
+    model = ChatGoogleGenerativeAI(model = 'gemini-1.5-pro-exp-0801')
     bot = Chatbot(model = model)
     memory = ConversationTokenBufferMemory(llm=model)
     output = bot(user_query = "Hi", memory = memory)
+    print(output)
