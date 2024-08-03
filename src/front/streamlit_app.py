@@ -7,7 +7,7 @@ WORKDIR = os.getenv("WORKDIR")
 os.chdir(WORKDIR)
 sys.path.append(WORKDIR)
 
-from src.front.utils import format_message, model_selection, saving_memory_in_file
+from src.front.utils import model_selection, saving_memory_in_file
 from constants import AVAILABLE_MODELS, CUSTOM_PROMPTS
 from langchain_core.messages import AIMessage, HumanMessage
 from langchain.memory import ConversationTokenBufferMemory
@@ -27,6 +27,12 @@ if __name__ == '__main__':
         page_icon="⚡",
         layout="wide"
     )
+    
+
+    if st.button("Close App", key="close_button", help="Click to close the app"):
+        os._exit(0)
+        
+
     if "prompt" not in st.session_state:
         st.session_state.prompt = 'Default-LLM'
         
@@ -52,10 +58,7 @@ if __name__ == '__main__':
     saving_memory_in_file(st.session_state.memory.chat_memory.messages)
     logger.info(f"Model settings:\n- Prompt:{st.session_state.llm_chat.system_prompt}\n- Model name:{st.session_state.llm_chat.model}\n- Temperature:{st.session_state.temperature}")
     with st.chat_message("system"):
-        if st.session_state.prompt == 'Default-LLM':
-            pass
-        else:
-            st.markdown(CUSTOM_PROMPTS[st.session_state.prompt])
+        st.markdown(CUSTOM_PROMPTS[st.session_state.prompt])
 
     for message in st.session_state.memory.chat_memory.messages:
         if isinstance(message, HumanMessage):
