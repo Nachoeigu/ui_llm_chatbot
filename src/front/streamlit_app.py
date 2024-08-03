@@ -41,7 +41,7 @@ if __name__ == '__main__':
         st.session_state.input_question = ''
 
     selected_prompt = st.selectbox("**CHOOSE SYSTEM PROMPT**", CUSTOM_PROMPTS, index=0)
-    selected_model = st.selectbox("**CHOOSE MODEL**", AVAILABLE_MODELS, index=4)
+    selected_model = st.selectbox("**CHOOSE MODEL**", AVAILABLE_MODELS, index=7)
     temperature = st.slider("**SET TEMPERATURE**", min_value=0.0, max_value=1.0, value=0.5, step=0.1)
     if st.button("Clean Memory", type = 'primary'):
         st.session_state.memory = ConversationTokenBufferMemory(llm=st.session_state.model)
