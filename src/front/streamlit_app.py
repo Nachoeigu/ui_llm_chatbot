@@ -33,7 +33,7 @@ if __name__ == '__main__':
     if "llm_chat" not in st.session_state:
         st.session_state = model_selection(st.session_state, 'OpenAI: gpt-4o-mini', 0.5, st.session_state.prompt)
     if "memory" not in st.session_state:
-        st.session_state.memory = ConversationTokenBufferMemory(llm=st.session_state.model)
+        st.session_state.memory = ConversationTokenBufferMemory(llm=st.session_state.model, max_token_limit=300000)
     if "messages" not in st.session_state:
         st.session_state.messages = []
 
@@ -49,7 +49,6 @@ if __name__ == '__main__':
 
     if (selected_model != st.session_state.model_name)|(st.session_state.temperature != temperature)|(st.session_state.prompt != selected_prompt):
         st.session_state = model_selection(st.session_state, selected_model, temperature, selected_prompt)
-
     saving_memory_in_file(st.session_state.memory.chat_memory.messages)
     logger.info(f"Model settings:\n- Prompt:{st.session_state.llm_chat.system_prompt}\n- Model name:{st.session_state.llm_chat.model}\n- Temperature:{st.session_state.temperature}")
     with st.chat_message("system"):
