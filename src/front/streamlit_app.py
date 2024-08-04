@@ -28,16 +28,15 @@ if __name__ == '__main__':
         layout="wide"
     )
     
-
+    
     if st.button("Close App", key="close_button", help="Click to close the app"):
         os._exit(0)
         
 
     if "prompt" not in st.session_state:
-        st.session_state.prompt = 'Default-LLM'
-        
+        st.session_state.prompt = 'Default-LLM'        
     if "llm_chat" not in st.session_state:
-        st.session_state = model_selection(st.session_state, 'OpenAI: gpt-4o-mini', 0.5, st.session_state.prompt)
+        st.session_state.model_name, st.session_state.temperature, st.session_state.prompt, st.session_state.model, st.session_state.llm_chat = model_selection('OpenAI: gpt-4o-mini', 0.5, st.session_state.prompt)
     if "memory" not in st.session_state:
         st.session_state.memory = ConversationTokenBufferMemory(llm=st.session_state.model, max_token_limit=300000)
     if "messages" not in st.session_state:
@@ -52,35 +51,36 @@ if __name__ == '__main__':
     if st.button("Clean Memory", type = 'primary'):
         st.session_state.memory = ConversationTokenBufferMemory(llm=st.session_state.model)
 
-
     if (selected_model != st.session_state.model_name)|(st.session_state.temperature != temperature)|(st.session_state.prompt != selected_prompt):
-        st.session_state = model_selection(st.session_state, selected_model, temperature, selected_prompt)
+        st.session_state.model_name, st.session_state.temperature, st.session_state.prompt, st.session_state.model, st.session_state.llm_chat = model_selection(selected_model, temperature, selected_prompt)
     saving_memory_in_file(st.session_state.memory.chat_memory.messages)
     logger.info(f"Model settings:\n- Prompt:{st.session_state.llm_chat.system_prompt}\n- Model name:{st.session_state.llm_chat.model}\n- Temperature:{st.session_state.temperature}")
-    with st.chat_message("system"):
+    with st.chat_message(name = "system", avatar = '👨‍🏫'):
         st.markdown(CUSTOM_PROMPTS[st.session_state.prompt])
 
-    for message in st.session_state.memory.chat_memory.messages:
+    for n_message, message in enumerate(st.session_state.memory.chat_memory.messages):
         if isinstance(message, HumanMessage):
-            role = "user"
+            role, avatar = "user", "😃"
         elif isinstance(message, AIMessage):
-            role = "assistant"
-        with st.chat_message(role):
-            st.markdown(message.content)    
+            role, avatar = "assistant", "🤖"
+        
+        with st.chat_message(name=role, avatar=avatar):
+            st.markdown(message.content)
+
     if user_query := st.chat_input("Put your messages here..."):
         # Display user message in chat message container
-        st.chat_message("user").markdown(user_query)
+        st.chat_message(name = "user", avatar = "😃").markdown(user_query)
         # Add user message to chat history
         st.session_state.messages.append({"role": "user", "content": user_query})
 
         response = f"Echo: {user_query}"
         # Display assistant response in chat message container
-        with st.chat_message("assistant"):
+        with st.chat_message(name = "assistant", avatar = '🤖'):
+            st.markdown("Generating response...")
             output = st.session_state.llm_chat(
                 user_query=user_query,
                 memory=st.session_state.memory
             )
-            st.markdown(output)
         
         st.session_state.memory.save_context(
                 {'input': user_query},

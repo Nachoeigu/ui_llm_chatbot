@@ -42,16 +42,13 @@ def provide_model(selected_model:str, temperature:float=0) -> tuple:
     
 
 
-def model_selection(session_state, selected_model:str, temperature:float, selected_prompt:str):
-    session_state.model_name = selected_model
-    session_state.temperature = temperature
-    session_state.prompt = selected_prompt
-    session_state.model = provide_model(selected_model=session_state.model_name,
-                                            temperature=session_state.temperature)
-    session_state.llm_chat = Chatbot(model=st.session_state.model,
-                                        system_prompt=CUSTOM_PROMPTS[session_state.prompt])
+def model_selection(selected_model:str, temperature:float, selected_prompt:str):
+    model = provide_model(selected_model=selected_model,
+                                            temperature=temperature)
+    llm_chat = Chatbot(model=model,
+                system_prompt=CUSTOM_PROMPTS[selected_prompt])
 
-    return session_state
+    return selected_model, temperature, selected_prompt, model, llm_chat
 
 def message_to_dict(message):
     if isinstance(message, HumanMessage):
