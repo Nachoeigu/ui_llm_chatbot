@@ -60,6 +60,6 @@ def message_to_dict(message):
 
 def saving_memory_in_file(memory):
     history = [message_to_dict(msg) for msg in memory]
-    filename = f"chat_history/{datetime.now().strftime('%Y%m%d')}.json"
+    filename = f"chat_history/{datetime.now().strftime('%Y%m%d%H%M')}.json"
     with open(filename, 'w') as f:
         json.dump(history, f, indent=4)
