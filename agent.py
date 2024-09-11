@@ -46,5 +46,4 @@ if __name__ == '__main__':
         input_msg = input("Question: ")
         input_message = HumanMessage(content=input_msg)
         output = app.invoke({"messages": [input_message]}, config) 
-        for m in output['messages'][-1:]:
-            m.pretty_print()
+        print("AI: ", output['messages'][-1].content)
