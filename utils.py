@@ -27,10 +27,12 @@ class GraphConfig(BaseModel):
     - qa_model: Select the model for the LLM. Options include 'openai', 'google', 'meta', or 'amazon'.
     - system_prompt: Select the prompt of your conversation.
     - temperature: Select the temperature for the model. Options range from 0 to 1.
+    - using_summary_in_memory: If you want to summarize previous messages, place True. Otherwise, False.
     """
     qa_model: Literal[*AVAILABLE_MODELS]
     system_prompt: Literal[*CUSTOM_PROMPTS.keys()]
     temperature: float = Field(ge=0, le=1)
+    using_summary_in_memory: bool = False
     
     @validator("temperature")
     def check_temperature(cls, temperature: float):

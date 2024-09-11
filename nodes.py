@@ -12,6 +12,7 @@ from utils import State
 from langchain_core.messages import SystemMessage
 from utils import GraphConfig, _get_model, adding_delay_for_rate_limits
 
+
 def answer_query(state: State, config: GraphConfig) -> State:
     model, system_prompt = _get_model(config = config)
     adding_delay_for_rate_limits(model)
@@ -21,5 +22,3 @@ def answer_query(state: State, config: GraphConfig) -> State:
         "messages": [output]
     }
 
-def read_human_feedback(state: State) -> State:
-    pass
