@@ -10,14 +10,19 @@ sys.path.append(WORKDIR)
 from langgraph.graph import StateGraph, END
 from utils import State, GraphInput, GraphOutput, GraphConfig
 from nodes import *
+from router import *
 
 def defining_nodes(workflow: StateGraph):
     workflow.add_node("llm", answer_query)
+    workflow.add_node("summarizing_memory", summarize_memory)
 
     return workflow
 
 def defining_edges(workflow: StateGraph):
-    workflow.add_edge("llm",END)
+    workflow.add_conditional_edges(
+        "llm",
+        define_next_step)
+    workflow.add_edge("summarizing_memory", END)
 
     return workflow
 

@@ -43,6 +43,7 @@ class GraphConfig(BaseModel):
 
 class State(TypedDict):
     messages: Annotated[List[AnyMessage], operator.add]
+    summary: str
 
 
 class GraphInput(TypedDict):
