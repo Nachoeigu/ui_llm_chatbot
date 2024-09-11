@@ -26,6 +26,8 @@ AVAILABLE_MODELS = [
     "Anthropic: claude-3-haiku",
     "Anthropic: claude-3-sonnet",
     "Anthropic: claude-3-opus",
+    "Amazon: anthropic.claude-3-5-sonnet-20240620-v1:0",
+    "Amazon: anthropic.claude-3-haiku-20240307-v1:0",
     "OpenAI: chatgpt-4o-latest",
     "OpenAI: gpt-4o-mini",
     "OpenAI: gpt-4o",
