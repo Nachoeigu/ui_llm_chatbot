@@ -9,3 +9,5 @@ langchain-google-genai
 langchain-anthropic
 langchain-groq
 transformers
+langgraph
+langchain-aws
