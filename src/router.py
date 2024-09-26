@@ -8,7 +8,7 @@ os.chdir(WORKDIR)
 sys.path.append(WORKDIR)
 
 from constants import *
-from utils import State, GraphConfig
+from src.utils import State, GraphConfig
 from typing import Literal
 from langgraph.graph import END
 
@@ -17,5 +17,7 @@ def define_next_step(state: State, config: GraphConfig) -> Literal[END, "summari
     using_summary_in_memory = config['configurable'].get("using_summary_in_memory", False)
     if using_summary_in_memory == False:
         return END
-    elif len(state['messages']) > 3:
+    elif len(state['messages']) > 20:
         return "summarizing_memory"
+    else:
+        return END

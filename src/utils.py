@@ -9,9 +9,9 @@ sys.path.append(WORKDIR)
 
 import time
 from langchain_core.pydantic_v1 import BaseModel, Field, validator
-import operator
+from langgraph.graph.message import add_messages
 from typing import TypedDict, Annotated, List, Literal
-from langchain_core.messages import AnyMessage, HumanMessage
+from langchain_core.messages import AnyMessage
 from langchain_openai.chat_models import ChatOpenAI
 from langchain_google_genai.chat_models import ChatGoogleGenerativeAI
 from langchain_groq import ChatGroq
@@ -42,7 +42,7 @@ class GraphConfig(BaseModel):
         return temperature
 
 class State(TypedDict):
-    messages: Annotated[List[AnyMessage], operator.add]
+    messages: Annotated[List[AnyMessage], add_messages]
     summary: str
 
 
@@ -50,7 +50,7 @@ class GraphInput(TypedDict):
     """
     The initial message that starts the AI system
     """
-    messages: Annotated[List[AnyMessage], operator.add]
+    messages: Annotated[List[AnyMessage], add_messages]
 
 class GraphOutput(TypedDict):
     """
@@ -64,7 +64,7 @@ def _get_model(config: GraphConfig):
     temperature = config['configurable'].get('temperature', 0)
     prompt_name = config['configurable'].get('system_prompt', 'Default-LLM')
     system_prompt = CUSTOM_PROMPTS[prompt_name]
-    company, model_name = desired_model.split(':')[0].strip().lower(), desired_model.split(':')[-1].strip()
+    company, model_name = desired_model.split(' : ')[0].strip().lower(), desired_model.split(' : ')[-1].strip()
 
     if company == "openai":
         model = ChatOpenAI(temperature=temperature, model=model_name)
