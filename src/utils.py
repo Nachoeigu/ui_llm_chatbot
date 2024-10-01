@@ -8,7 +8,7 @@ os.chdir(WORKDIR)
 sys.path.append(WORKDIR)
 
 import time
-from langchain_core.pydantic_v1 import BaseModel, Field, validator
+from pydantic import BaseModel, Field, validator
 from langgraph.graph.message import add_messages
 from typing import TypedDict, Annotated, List, Literal
 from langchain_core.messages import AnyMessage
